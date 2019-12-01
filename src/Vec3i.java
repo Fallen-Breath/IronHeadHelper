@@ -19,6 +19,12 @@ public class Vec3i implements Comparable<Vec3i>
         this((int)floor(xIn), (int)floor(yIn), (int)floor(zIn));
     }
 
+    @Override
+    public String toString()
+    {
+        return String.format("[%d, %d, %d]", x, y, z);
+    }
+
     public boolean equals(Object p_equals_1_)
     {
         if (this == p_equals_1_)

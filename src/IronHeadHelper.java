@@ -3,24 +3,21 @@ import java.util.*;
 public class IronHeadHelper
 {
 	static Scanner scanner = new Scanner(System.in);
-	public static List<Vec3i> explode(Vec3i pos)
+	public static List<Vec3i> explode(Vec3i pos, int range)
 	{
 		Set<Vec3i> set = new HashSet<Vec3i>();
-		int range = 5;
 		for (int i = -range; i <= range; i++)
 			for (int j = -range; j <= range; j++)
 				for (int k = -range; k <= range; k++)
-				{
-					Vec3i blockPos = new Vec3i(pos.x + i, pos.y + j, pos.z + k);
-					if (canPower(pos, blockPos))
-					{
-						set.add(blockPos);
-					}
-				}
+					set.add(new Vec3i(pos.x + i, pos.y + j, pos.z + k));
 
 		List<Vec3i> ret = new ArrayList<Vec3i>();
 		ret.addAll(set);
 		return ret;
+	}
+	public static List<Vec3i> explode(Vec3i pos)
+	{
+		return explode(pos, 5);
 	}
 
 	static boolean canPower(Vec3i piston, Vec3i power)
@@ -29,8 +26,7 @@ public class IronHeadHelper
 		{
 			return false;
 		}
-		Vec3i piston_up = new Vec3i(piston.getX(), piston.getY() + 1, piston.getZ());
-		return piston.getManhattanDistance(power) <= 2 || piston_up.getManhattanDistance(power) <= 2;
+		return piston.getManhattanDistance(power) <= 2 || piston.up().getManhattanDistance(power) <= 2;
 	}
 
 	public static List<Result> calc(Vec3i pistonPos, Vec3i pistonHeadPos)
@@ -44,7 +40,10 @@ public class IronHeadHelper
 			{
 				break;
 			}
-			ret.add(new Result(j, pistonPos.getManhattanDistance(j), getDirection(pistonPos, pistonHeadPos)));
+			if (canPower(pistonPos, j))
+			{
+				ret.add(new Result(j, pistonPos.getManhattanDistance(j), getDirection(pistonPos, pistonHeadPos)));
+			}
 		}
 		return ret;
 	}
@@ -95,15 +94,15 @@ public class IronHeadHelper
 		List<Result> ans = new ArrayList<>();
 		ans.addAll(calc(pistonPos, pistonPos.up()));
 		ans.addAll(calc(pistonPos, pistonPos.down()));
-		ans.addAll(calc(pistonPos, pistonPos.south()));
-		ans.addAll(calc(pistonPos, pistonPos.north()));
 		ans.addAll(calc(pistonPos, pistonPos.east()));
 		ans.addAll(calc(pistonPos, pistonPos.west()));
+		ans.addAll(calc(pistonPos, pistonPos.south()));
+		ans.addAll(calc(pistonPos, pistonPos.north()));
 		ans.sort(Result::compareTo);
 		int counter = 0;
 		for (Result i: ans)
 		{
-			String msg = String.format("Position = [%d, %d, %d] | Piston facing = %-5s | Distance = %d", i.pos.x, i.pos.y, i.pos.z, i.facing, i.distance);
+			String msg = String.format("Position = %s | Piston facing = %-5s | Distance = %d", i.pos, i.facing, i.distance);
 			msg += i.distance == 1 ? " | RedstoneBlock facing = " + getDirection(pistonPos, i.pos) : "";
 			System.out.println(msg);
 			if (++counter == 20)
