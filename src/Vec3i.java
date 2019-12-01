@@ -123,4 +123,34 @@ public class Vec3i implements Comparable<Vec3i>
     {
         return this.distanceSq((double)to.getX(), (double)to.getY(), (double)to.getZ());
     }
+
+    public Vec3i up()
+    {
+        return new Vec3i(x, y + 1, z);
+    }
+
+    public Vec3i down()
+    {
+        return new Vec3i(x, y - 1, z);
+    }
+
+    public Vec3i south()
+    {
+        return new Vec3i(x, y, z + 1);
+    }
+
+    public Vec3i north()
+    {
+        return new Vec3i(x, y, z - 1);
+    }
+
+    public Vec3i east()
+    {
+        return new Vec3i(x + 1, y, z);
+    }
+
+    public Vec3i west()
+    {
+        return new Vec3i(x - 1, y, z);
+    }
 }
